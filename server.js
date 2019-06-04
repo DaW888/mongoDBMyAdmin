@@ -99,6 +99,7 @@ let db;
 
 const opers = require('./modules/Operations.js');
 
+let ip = null;
 
 function servResponse(req, res) {
     let allData = '';
@@ -110,39 +111,142 @@ function servResponse(req, res) {
 
     req.on('end', function() {
         const finish = qs.parse(allData);
-        const coll = db.collection("testowa");
+        // const coll = db.collection("testowa");
 
-        var result = null;
+        const result = {};
+
         switch (finish.action) {
-        case 'addUser':
-            result = {login: finish.login, pass: finish.pass};
-            opers.Insert(coll, result);
-
-            res.end(JSON.stringify(result, null, 2));
+        case 'setAddress':
+            ip = finish.ip;
+            mongoClient.connect(`mongodb://${finish.ip}/`, (err, _db) => {
+                if(err){
+                    console.log(err);
+                    res.end(JSON.stringify('error', null, 2));
+                }
+                else {
+                    console.log("polaczono!");
+                    result.ip = 'Polaczono z Localhost';
+                    db = _db;
+                    db.admin().listDatabases((err, dbs) => {
+                        if(err) console.log(err);
+                        else{
+                            console.log(dbs.databases);
+                            console.log(dbs);
+                            const dbsFiltered = dbs.databases.filter(db =>{
+                                return db.name != 'admin' && db.name != 'config' && db.name != 'local';
+                            })
+                            result.dbs = dbsFiltered;
+                            console.log(dbsFiltered);
+                            res.end(JSON.stringify(result, null, 2));
+                            
+                        }
+                    })
+                }
+            })
             break;
 
-        case 'refreshUsers':
-            opers.SelectAll(coll, (data) => {
-                console.log('oonserver');
-                console.log(data);
-                result = {data};
-                res.end(JSON.stringify(result, null, 2));
-
-            });
-            // res.end(JSON.stringify(result, null, 2));
+        case 'getCollOfDB':
+            console.log(ip, finish.name);
+            mongoClient.connect(`mongodb://${ip}/${finish.name}`, (err, _db) => {
+                if(err) console.log(err);
+                else console.log("polaczono!");
+                db = _db;
+                _db.listCollections().toArray((err, colls) => {
+                    if(err) console.log(err);
+                    else {
+                        console.log(colls);
+                        res.end(JSON.stringify(colls, null, 2));
+                    }
+                })
+            })
             break;
 
-        case 'removeUser':
-            opers.DeleteById(ObjectID, coll, finish.id);
-            res.end(JSON.stringify(null, null, 2));
-
+        case 'addDataBase':
+            mongoClient.connect(`mongodb://${ip}/${finish.name}`, (err, _db) => {
+                if(err) console.log(err);
+                else console.log("created!"+ finish.name);
+                db = _db;
+                db.admin().listDatabases((err, dbs) => {
+                    if(err) console.log(err);
+                    else{
+                        _db.createCollection("testowa", function (err, coll) {
+                            res.end(JSON.stringify(null, null, 2));
+                        })
+                    }
+                })
+            })
             break;
 
-        case 'updatePass':
-            console.log('witaj'+finish.pass);
-            result = {id: finish.id, pass: finish.pass};
-            opers.UpdateById(ObjectID, coll, result);
-            res.end(JSON.stringify(null, null, 2));
+        case 'getDataBases':
+                mongoClient.connect(`mongodb://${ip}/`, (err, _db) => {
+                    if(err){
+                        console.log(err);
+                        res.end(JSON.stringify('error', null, 2));
+                    }
+                    else {
+                        _db.admin().listDatabases((err, dbs) => {
+                            if(err) console.log(err);
+                            else{
+                                console.log(dbs.databases);
+                                console.log(dbs);
+                                const dbsFiltered = dbs.databases.filter(db =>{
+                                    return db.name != 'admin' && db.name != 'config' && db.name != 'local';
+                                })
+                                result.dbs = dbsFiltered;
+                                console.log(dbsFiltered);
+                                res.end(JSON.stringify(result, null, 2));
+                                
+                            }
+                        })
+                    }
+                })
+            break;
+        
+        case 'removeDataBase':
+                mongoClient.connect(`mongodb://${ip}/${finish.name}`, (err, _db) => {
+                    if(err){
+                        console.log(err);
+                        res.end(JSON.stringify('error', null, 2));
+                    }
+                    else {
+                        _db.dropDatabase((err, result) => {
+                            if(err) console.log(err);
+                            else {
+                                console.log('deleted'+ finish.name);
+                                res.end(JSON.stringify(null, null, 2));
+                            }
+                        })
+                    }
+                })
+            break;
+
+        case 'addCollection':
+            mongoClient.connect(`mongodb://${ip}/${finish.dbName}`, (err, _db) => {
+                if(err){
+                    console.log(err);
+                    res.end(JSON.stringify('error', null, 2));
+                }
+                else {
+                    _db.createCollection(finish.collName, function (err, coll) {
+                        res.end(JSON.stringify(finish, null, 2));
+                    })
+                }
+            })
+            break;
+
+        case 'removeCollection':
+        mongoClient.connect(`mongodb://${ip}/${finish.dbName}`, (err, _db) => {
+            if(err){
+                console.log(err);
+                res.end(JSON.stringify('error', null, 2));
+            }
+            else {
+                _db.dropCollection(finish.collName, function (err, coll) {
+                    if(err) console.log(err);
+                    res.end(JSON.stringify(finish, null, 2));
+                })
+            }
+        })
             break;
         }
     });

@@ -5,44 +5,30 @@ class Net {
 
     // wyslanie nazwy uzytkownika na serwer
     // odbior: canLogin, message, if(canLogin){to też users[]}
-    addUser(login, pass) {
+    setAddress(ip) {
         $.ajax({
             url: '../server.js',
-            data: { action: 'addUser', login: login, pass: pass},
+            data: { action: 'setAddress', ip},
             type: 'POST',
             success: function(data) {
                 const obj = JSON.parse(data);
                 console.log(obj);
+                main.setAddressDiv(obj);
             },
             error: function(xhr, status, error) {
                 console.log(xhr, status, error);
             },
         });
     }
-    refreshUsers(){
+    getCollOfDB(name){
         $.ajax({
             url: '../server.js',
-            data: { action: 'refreshUsers'},
+            data: { action: 'getCollOfDB', name },
             type: 'POST',
             success: function(data) {
                 const obj = JSON.parse(data);
                 console.log(obj);
-                main.getData(obj.data);
-            },
-            error: function(xhr, status, error) {
-                console.log(xhr, status, error);
-            },
-        });
-    }
-
-    removeUser(id){
-        $.ajax({
-            url: '../server.js',
-            data: { action: 'removeUser', id},
-            type: 'POST',
-            success: function(data) {
-                const obj = JSON.parse(data);
-                console.log(obj);
+                main.setCollectionList(obj);
             },
             error: function(xhr, status, error) {
                 console.log(xhr, status, error);
@@ -50,14 +36,78 @@ class Net {
         });
     }
 
-    updatePass(id, pass){
+    addDataBase(name){
         $.ajax({
             url: '../server.js',
-            data: { action: 'updatePass', id, pass},
+            data: { action: 'addDataBase', name},
             type: 'POST',
             success: function(data) {
                 const obj = JSON.parse(data);
                 console.log(obj);
+                net.getDataBases();
+            },
+            error: function(xhr, status, error) {
+                console.log(xhr, status, error);
+            },
+        });
+    }
+
+    getDataBases(){
+        $.ajax({
+            url: '../server.js',
+            data: { action: 'getDataBases'},
+            type: 'POST',
+            success: function(data) {
+                const obj = JSON.parse(data);
+                console.log(obj);
+                main.setDataBases(obj);
+            },
+            error: function(xhr, status, error) {
+                console.log(xhr, status, error);
+            },
+        });
+    }
+
+    removeDataBase(name){ //addCollection
+        $.ajax({
+            url: '../server.js',
+            data: { action: 'removeDataBase', name},
+            type: 'POST',
+            success: function(data) {
+                const obj = JSON.parse(data);
+                console.log(obj);
+                net.getDataBases();
+            },
+            error: function(xhr, status, error) {
+                console.log(xhr, status, error);
+            },
+        });
+    }
+    
+    addCollection(dbName, collName){
+        $.ajax({
+            url: '../server.js',
+            data: { action: 'addCollection', dbName, collName},
+            type: 'POST',
+            success: function(data) {
+                const obj = JSON.parse(data);
+                console.log(obj);
+            },
+            error: function(xhr, status, error) {
+                console.log(xhr, status, error);
+            },
+        });
+    }
+
+    removeCollection(dbName, collName){
+        $.ajax({
+            url: '../server.js',
+            data: { action: 'removeCollection', dbName, collName},
+            type: 'POST',
+            success: function(data) {
+                const obj = JSON.parse(data);
+                console.log(obj);
+                net.getDataBases();
             },
             error: function(xhr, status, error) {
                 console.log(xhr, status, error);

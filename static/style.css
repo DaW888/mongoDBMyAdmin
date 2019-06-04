@@ -26,6 +26,9 @@ header{
 
 p{
     display: inline-block;
+}
+
+#pThisCollection, #pThisBase {
     color: orangered;
 }
 div{
@@ -70,6 +73,19 @@ button:hover{
     border-radius: 0px;
 }
 
+.dbEl{
+    cursor: pointer;
+}
+.collEl{
+    cursor: pointer;
+}
+
 .dbEl:hover, .collEl:hover{
     background-color: rgb(156, 54, 18);
+}
+
+header{
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
 }
