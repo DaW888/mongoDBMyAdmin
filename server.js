@@ -235,19 +235,52 @@ function servResponse(req, res) {
             break;
 
         case 'removeCollection':
-        mongoClient.connect(`mongodb://${ip}/${finish.dbName}`, (err, _db) => {
-            if(err){
-                console.log(err);
-                res.end(JSON.stringify('error', null, 2));
-            }
-            else {
-                _db.dropCollection(finish.collName, function (err, coll) {
-                    if(err) console.log(err);
-                    res.end(JSON.stringify(finish, null, 2));
-                })
-            }
-        })
+            mongoClient.connect(`mongodb://${ip}/${finish.dbName}`, (err, _db) => {
+                if(err){
+                    console.log(err);
+                    res.end(JSON.stringify('error', null, 2));
+                }
+                else {
+                    _db.dropCollection(finish.collName, function (err, coll) {
+                        if(err) console.log(err);
+                        res.end(JSON.stringify(finish, null, 2));
+                    })
+                }
+            })
+            break;
+        case 'getDataFromColl':
+            mongoClient.connect(`mongodb://${ip}/${finish.dbName}`, (err, _db) => {
+                if(err){
+                    console.log(err);
+                    res.end(JSON.stringify('error', null, 2));
+                }
+                else {
+                    const coll = db.collection(finish.collName);
+                    opers.SelectAll(coll, (data) => {
+                        console.log(data);
+                        res.end(JSON.stringify(data, null, 2));
+                    })
+                }
+            })
+            break;
+
+        case 'delDataEl':
+            mongoClient.connect(`mongodb://${ip}/${finish.dbName}`, (err, _db) => {
+                if(err){
+                    console.log(err);
+                    res.end(JSON.stringify('error', null, 2));
+                }
+                else {
+                    const coll = db.collection(finish.collName);
+                    opers.DeleteById(ObjectID, coll, finish.idEl);
+                    result.dbName = finish.dbName;
+                    result.collName = finish.collName;
+                    res.end(JSON.stringify(result, null, 2));
+
+                }
+            })
             break;
         }
     });
 }
+

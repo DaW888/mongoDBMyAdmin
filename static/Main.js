@@ -42,8 +42,10 @@ class Main {
         colls.forEach(coll => {
             const dv = $('<div>').html(coll.name).addClass('collEl').appendTo($('#dvCollectionList'));
             dv.click(() =>{
-                const nameColl = dv.html();
-                $('#pThisCollection').html(nameColl);
+                const collName = dv.html();
+                const dbName = $('#pThisBase').html();
+                $('#pThisCollection').html(collName);
+                net.getDataFromColl(dbName, collName);
             })
         })
     }
@@ -104,6 +106,51 @@ class Main {
                 })
             });
         }
+    }
+
+    setDataFromColl(data){
+        $('#main').empty();
+        // <div class="dataEl">
+        //     <textarea cols="70" rows="10" disabled></textarea>
+        //     <button class="delDataEl">Delete</button>
+        //     <button class="editDataEl">Edit</button>
+        // </div>
+        data.forEach(el => {
+            const stringEl = JSON.stringify(el, null, 2);
+            const dv = $('<div>').addClass('dataEl');
+            $('<textarea>').attr({name: el._id, disabled: 'disabled', cols: 70, rows: 10}).val(stringEl).appendTo(dv);
+            const delDataEl = $('<button>').html('Delete').addClass('delDataEl').attr('data-id', el._id).appendTo(dv);
+            const editDataEl = $('<button>').html('Edit').addClass('editDataEl').attr('data-id', el._id).appendTo(dv);
+            dv.appendTo($('#main'));
+
+            delDataEl.click((e)=> {
+                console.log(e.target.getAttribute('data-id'));
+                const idEl = e.target.getAttribute('data-id');
+                const dbName = $('#pThisBase').html();
+                const collName = $('#pThisCollection').html();
+                net.delDataEl(dbName, collName, idEl);
+            });
+
+            editDataEl.click((e)=> {
+                console.log(e.target.getAttribute('data-id'));
+                const idEl = e.target.getAttribute('data-id');
+                const dbName = $('#pThisBase').html();
+                const collName = $('#pThisCollection').html();
+                this.editOneElement(dbName, collName, idEl, stringEl);
+            });
+        })
+
+        
+    }
+
+    editOneElement(dbName, collName, idEl, stringEl){
+        $('#main').empty();
+        //TODO calosc
+        // const dv = $('<div>').addClass('dataEl');
+        // $('<textarea>').attr({name: el._id, disabled: 'disabled', cols: 70, rows: 20}).val(stringEl).appendTo(dv);
+        // const delDataEl = $('<button>').html('Delete').addClass('delDataEl').attr('data-id', el._id).appendTo(dv);
+        // const editDataEl = $('<button>').html('Edit').addClass('editDataEl').attr('data-id', el._id).appendTo(dv);
+        // dv.appendTo($('#main'));
     }
 
 }

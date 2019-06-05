@@ -114,4 +114,36 @@ class Net {
             },
         });
     }
+
+    getDataFromColl(dbName, collName){
+        $.ajax({
+            url: '../server.js',
+            data: { action: 'getDataFromColl', dbName, collName},
+            type: 'POST',
+            success: function(data) {
+                const obj = JSON.parse(data);
+                console.log(obj);
+                main.setDataFromColl(obj);
+            },
+            error: function(xhr, status, error) {
+                console.log(xhr, status, error);
+            },
+        });
+    }
+
+    delDataEl(dbName, collName, idEl){
+        $.ajax({
+            url: '../server.js',
+            data: { action: 'delDataEl', dbName, collName, idEl},
+            type: 'POST',
+            success: function(data) {
+                const obj = JSON.parse(data);
+                console.log(obj);
+                net.getDataFromColl(obj.dbName, obj.collName);
+            },
+            error: function(xhr, status, error) {
+                console.log(xhr, status, error);
+            },
+        });
+    }
 }
