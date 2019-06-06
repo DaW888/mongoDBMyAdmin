@@ -146,11 +146,22 @@ class Main {
     editOneElement(dbName, collName, idEl, stringEl){
         $('#main').empty();
         //TODO calosc
-        // const dv = $('<div>').addClass('dataEl');
-        // $('<textarea>').attr({name: el._id, disabled: 'disabled', cols: 70, rows: 20}).val(stringEl).appendTo(dv);
-        // const delDataEl = $('<button>').html('Delete').addClass('delDataEl').attr('data-id', el._id).appendTo(dv);
-        // const editDataEl = $('<button>').html('Edit').addClass('editDataEl').attr('data-id', el._id).appendTo(dv);
-        // dv.appendTo($('#main'));
+        const dv = $('<div>').addClass('dataEl');
+        const textArea = $('<textarea>').attr({name: idEl, cols: 70, rows: 40}).val(stringEl).appendTo(dv);
+        const setDataEl = $('<button>').html('Set').addClass('delDataEl').attr('data-id', idEl).appendTo(dv);
+        dv.appendTo($('#main'));
+
+        setDataEl.click(() => {
+            const data = textArea.val();
+            try{
+                const json = JSON.parse(data);
+                console.log(json);
+
+            }catch(e){
+                console.log('invalid json');
+                alert('INVALID JSON');
+            }
+        })
     }
 
 }
