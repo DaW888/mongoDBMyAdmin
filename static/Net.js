@@ -146,4 +146,19 @@ class Net {
             },
         });
     }
+
+    updateDataEl(dbName, collName, idEl, data){
+        $.ajax({
+            url: '../server.js',
+            data: { action: 'updateDataEl', dbName, collName, idEl, data:JSON.stringify(data, null ,2)},
+            type: 'POST',
+            success: function(data) {
+                const obj = JSON.parse(data);
+                console.log(obj);
+            },
+            error: function(xhr, status, error) {
+                console.log(xhr, status, error);
+            },
+        });
+    }
 }

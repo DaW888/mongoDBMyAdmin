@@ -35,10 +35,14 @@ module.exports = {
     // z $set - dokonuje aktualizacji tylko wybranego pola
 
     UpdateById: function (ObjectID, collection, data){
+        console.log(data);
+        const id = data._id;
+        delete data._id;
         collection.updateOne(
-            { _id: ObjectID(data.id) },
-            { $set: { pass: data.pass } },
+            { _id: ObjectID(id) },
+            data,
             function (err, data) {
+                if(err)console.log(err);
                 console.log("update: "+data)
             })
     },

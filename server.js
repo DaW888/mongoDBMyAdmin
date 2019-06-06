@@ -280,6 +280,27 @@ function servResponse(req, res) {
                 }
             })
             break;
+
+        case 'updateDataEl':
+            mongoClient.connect(`mongodb://${ip}/${finish.dbName}`, (err, _db) => {
+                if(err){
+                    console.log(err);
+                    res.end(JSON.stringify('error', null, 2));
+                }
+                else {
+                    console.log('dane');
+                    data = JSON.parse(finish.data);
+                    console.log(data);
+                    const coll = db.collection(finish.collName);
+                    opers.UpdateById(ObjectID, coll, data);
+
+                    result.dbName = finish.dbName;
+                    result.collName = finish.collName;
+                    res.end(JSON.stringify(result, null, 2));
+
+                }
+            })
+            break;
         }
     });
 }
